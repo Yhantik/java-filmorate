@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import lombok.extern.slf4j.Slf4j;
+import jakarta.validation.Valid;
+
 
 import java.time.LocalDate;
 import java.util.*;
@@ -22,9 +24,12 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film addFilm(@RequestBody Film film) {
-        validateFilm(film);
-
+    public Film addFilm(@Valid @RequestBody Film film) {
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+            String message = "Фильм не должен быть раньше 28.12.1895";
+            log.error(message);
+            throw new ValidationException(message);
+        }
         film.setId(getNextId());
         films.put(film.getId(), film);
         log.info("Фильм добавлен: {}", film);
@@ -32,9 +37,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film updateFilm(@RequestBody Film film) {
-        validateFilm(film);
-
+    public Film updateFilm(@Valid @RequestBody Film film) {
         if (!films.containsKey(film.getId())) {
             String message = "Фильм не найден";
             log.error(message);
@@ -43,29 +46,6 @@ public class FilmController {
         films.put(film.getId(), film);
         log.info("Фильм обновлен: {}", film);
         return film;
-    }
-
-    private void validateFilm(Film film) {
-        if (film.getName() == null || film.getName().isEmpty()) {
-            String message = "Название не должно быть пустым";
-            log.error(message);
-            throw new ValidationException(message);
-        }
-        if (film.getDescription() != null && film.getDescription().length() > 200) {
-            String message = "Максимальная длина описания должна быть не больше 200 символов";
-            log.error(message);
-            throw new ValidationException(message);
-        }
-        if (film.getReleaseDate() == null || film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            String message = "Дата релиза не должна быть раньше 28.12.1895";
-            log.error(message);
-            throw new ValidationException(message);
-        }
-        if (film.getDuration() == null || film.getDuration() <= 0) {
-            String message = "Продолжительность фильма должна быть положительным числом";
-            log.error(message);
-            throw new ValidationException(message);
-        }
     }
 
     private long getNextId() {
