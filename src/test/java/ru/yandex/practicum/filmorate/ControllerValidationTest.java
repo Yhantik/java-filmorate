@@ -30,8 +30,13 @@ public class ControllerValidationTest {
 
     @Test
     public void testValidFilm() throws Exception {
-        Film film = new Film(1L, "Film", "Description",
-                LocalDate.of(1895, 12, 28), 120L);
+        Film film = Film.builder()
+                .id(1L)
+                .name("Film")
+                .description("Description")
+                .releaseDate(LocalDate.of(1895, 12, 28))
+                .duration(120L)
+                .build();
         mockMvc.perform(post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(film)))
@@ -40,8 +45,13 @@ public class ControllerValidationTest {
 
     @Test
     public void testInvalidFilmName() throws Exception {
-        Film film = new Film(1L, "", "Description",
-                LocalDate.of(1895, 12, 28), 120L);
+        Film film = Film.builder()
+                .id(1L)
+                .name("")
+                .description("Description")
+                .releaseDate(LocalDate.of(1895, 12, 28))
+                .duration(120L)
+                .build();
         mockMvc.perform(post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(film)))
@@ -50,8 +60,13 @@ public class ControllerValidationTest {
 
     @Test
     public void testInvalidFilmDescription() throws Exception {
-        Film film = new Film(1L, "Film", "a".repeat(201),
-                LocalDate.of(1895, 12, 28), 120L);
+        Film film = Film.builder()
+                .id(1L)
+                .name("Film")
+                .description("a".repeat(201))
+                .releaseDate(LocalDate.of(1895, 12, 28))
+                .duration(120L)
+                .build();
         mockMvc.perform(post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(film)))
@@ -61,16 +76,26 @@ public class ControllerValidationTest {
     @Test
     public void testInvalidFilmReleaseDate() {
         FilmController filmController = new FilmController();
-        Film film = new Film(1L, "Film", "Description",
-                LocalDate.of(1895, 12, 27), 120L);
+        Film film = Film.builder()
+                .id(1L)
+                .name("Film")
+                .description("Description")
+                .releaseDate(LocalDate.of(1895, 12, 27))
+                .duration(120L)
+                .build();
         ValidationException exception = assertThrows(ValidationException.class, () -> filmController.addFilm(film));
         assertEquals("Фильм не должен быть раньше 28.12.1895", exception.getMessage());
     }
 
     @Test
     public void testInvalidFilmDuration() throws Exception {
-        Film film = new Film(1L, "Film", "Description",
-                LocalDate.of(1895, 12, 28), 0L);
+        Film film = Film.builder()
+                .id(1L)
+                .name("Film")
+                .description("Description")
+                .releaseDate(LocalDate.of(1895, 12, 28))
+                .duration(0L)
+                .build();
         mockMvc.perform(post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(film)))
@@ -79,8 +104,13 @@ public class ControllerValidationTest {
 
     @Test
     public void testValidUser() throws Exception {
-        User user = new User(1L, "user@example.com", "userLogin", "User",
-                LocalDate.of(2002, 10, 25));
+        User user = User.builder()
+                .id(1L)
+                .email("user@example.com")
+                .login("userLogin")
+                .name("User")
+                .birthday(LocalDate.of(2002, 10, 25))
+                .build();
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
@@ -89,8 +119,13 @@ public class ControllerValidationTest {
 
     @Test
     public void testInvalidUserEmail() throws Exception {
-        User user = new User(1L, "invalid-email", "userLogin", "User",
-                LocalDate.of(2002, 10, 25));
+        User user = User.builder()
+                .id(1L)
+                .email("invalid-email")
+                .login("userLogin")
+                .name("User")
+                .birthday(LocalDate.of(2002, 10, 25))
+                .build();
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
@@ -99,8 +134,13 @@ public class ControllerValidationTest {
 
     @Test
     public void testInvalidUserLogin() throws Exception {
-        User user = new User(1L, "user@example.com", " ", "User",
-                LocalDate.of(2002, 10, 25));
+        User user = User.builder()
+                .id(1L)
+                .email("user@example.com")
+                .login(" ")
+                .name("User")
+                .birthday(LocalDate.of(2002, 10, 25))
+                .build();
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
@@ -109,8 +149,13 @@ public class ControllerValidationTest {
 
     @Test
     public void testInvalidUserBirthday() throws Exception {
-        User user = new User(1L, "user@example.com", "userLogin", "User",
-                LocalDate.now().plusDays(1));
+        User user = User.builder()
+                .id(1L)
+                .email("user@example.com")
+                .login("userLogin")
+                .name("User")
+                .birthday(LocalDate.now().plusDays(1))
+                .build();
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
