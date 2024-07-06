@@ -4,12 +4,10 @@ import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.time.LocalDate;
 import java.util.*;
 
 @RestController
@@ -28,11 +26,6 @@ public class FilmController {
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            String message = "Фильм не должен быть раньше 28.12.1895";
-            log.error(message);
-            throw new ValidationException(message);
-        }
         log.info("Фильм добавлен: {}", film);
         return filmService.addFilm(film);
     }
