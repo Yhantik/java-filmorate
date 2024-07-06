@@ -5,11 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
 public class User {
     private Long id;
+    private final Set<Long> friends = new HashSet<>();
 
     @Email(message = "Неверный формат электронной почты")
     private String email;
