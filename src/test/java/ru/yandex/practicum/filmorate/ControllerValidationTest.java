@@ -9,14 +9,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.controller.FilmController;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,11 +23,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ControllerValidationTest {
 
     private FilmService filmService;
-    private FilmController filmController;
 
     @BeforeEach
     public void setUp() {
-        filmController = new FilmController(filmService);
+        FilmController filmController = new FilmController(filmService);
     }
 
     @Autowired
@@ -85,7 +82,7 @@ public class ControllerValidationTest {
     }
 
     @Test
-    public void testInvalidFilmReleaseDate() {
+    public void testInvalidFilmReleaseDate() throws Exception {
         Film film = Film.builder()
                 .id(1L)
                 .name("Film")
@@ -93,8 +90,10 @@ public class ControllerValidationTest {
                 .releaseDate(LocalDate.of(1895, 12, 27))
                 .duration(120L)
                 .build();
-        ValidationException exception = assertThrows(ValidationException.class, () -> filmController.addFilm(film));
-        assertEquals("Фильм не должен быть раньше 28.12.1895", exception.getMessage());
+        mockMvc.perform(post("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(film)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

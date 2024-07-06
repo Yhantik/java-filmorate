@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.annotation.MinDate;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -22,6 +23,7 @@ public class Film {
     private String description;
 
     @PastOrPresent(message = "Дата релиза не должна быть в будущем")
+    @MinDate(value = "1895-12-28", message = "Фильм не должен быть раньше 28.12.1895")
     private LocalDate releaseDate;
 
     @Positive(message = "Продолжительность фильма должна быть положительным числом")
