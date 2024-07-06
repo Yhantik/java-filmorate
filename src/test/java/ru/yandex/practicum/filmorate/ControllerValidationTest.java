@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -11,6 +12,7 @@ import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
 
@@ -22,11 +24,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class ControllerValidationTest {
 
+    private FilmService filmService;
+    private FilmController filmController;
+
+    @BeforeEach
+    public void setUp() {
+        filmController = new FilmController(filmService);
+    }
+
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
+
 
     @Test
     public void testValidFilm() throws Exception {
@@ -75,7 +86,6 @@ public class ControllerValidationTest {
 
     @Test
     public void testInvalidFilmReleaseDate() {
-        FilmController filmController = new FilmController();
         Film film = Film.builder()
                 .id(1L)
                 .name("Film")

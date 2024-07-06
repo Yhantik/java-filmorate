@@ -5,11 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
 public class Film {
     private Long id;
+    private final Set<Long> likes = new HashSet<>();
 
     @NotBlank(message = "Название не должно быть пустым")
     private String name;
